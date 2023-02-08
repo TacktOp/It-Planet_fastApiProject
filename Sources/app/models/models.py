@@ -1,0 +1,11 @@
+from pydantic import BaseModel
+from pydantic import EmailStr
+
+from .PydanticObjectId import PydanticObjectId
+
+class Profile(BaseModel):
+    id: PydanticObjectId = None
+    firstName: str
+    lastName: str
+    email: EmailStr
+    password: str

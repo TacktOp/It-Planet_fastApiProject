@@ -1,10 +1,11 @@
 from fastapi import APIRouter
+from pydantic import EmailStr
 from datetime import datetime
 
-from ..database.operations import Operations
+from ..database.database import Database
 
 router = APIRouter()
-dbo = Operations()
+dbo = Database()
 
 @router.get('/animals/{animalId}/locations')
 async def get_animalLocations(

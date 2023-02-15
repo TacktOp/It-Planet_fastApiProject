@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 from pydantic import EmailStr
 
-from ..database.operations import Operations
+from ..database.database import Database
 
 router = APIRouter()
-dbo = Operations()
+dbo = Database()
 
 @router.get('/accounts/{accountId}')
 async def get_account(

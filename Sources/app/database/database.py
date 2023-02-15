@@ -1,13 +1,16 @@
 import pymongo.database
 from pymongo import MongoClient
+from pydantic import EmailStr
 from bson.objectid import ObjectId
+
+from ..models.models import Profile
 
 class Database:
     client: MongoClient
     db: pymongo.database.Database
     profile: pymongo.collection.Collection
-    animals:pymongo.collection.Collection
-    locations:pymongo.collection.Collection
+    animals: pymongo.collection.Collection
+    locations: pymongo.collection.Collection
 
     def __init__(self):
         self.client = MongoClient('mongodb://localhost:27017')
@@ -15,3 +18,22 @@ class Database:
         self.profile = self.db['profile']
         self.animals = self.db['animals']
         self.locations = self.db['locations']
+
+    def add_profile(
+            self,
+            firstName: str,
+            lastName: str,
+            email: EmailStr,
+            password: str
+    ):
+        data = Profile(
+            firstName=firstName,
+            lastName=lastName,
+            email=email,
+            password=password
+        )
+
+        if (self.profile.find_one({"email": email}) is None):
+            self.profile.insert_one(data.dict())
+            return True
+        return False

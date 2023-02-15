@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 
-from ..database.operations import Operations
+from ..database.database import Database
 
 router = APIRouter()
-dbo = Operations()
+dbo = Database()
 
 @router.get('/animals/types/{typeId}')
 async def get_animalsTypes(

@@ -1,16 +1,20 @@
 from fastapi import APIRouter
 from pydantic import EmailStr
 
-from ..database.operations import Operations
+from ..database.database import Database
 
 router = APIRouter()
-dbo = Operations()
+dbo = Database()
 
 @router.post('/registration')
 async def registration(
     firstName: str,
     lastName:str,
     email: EmailStr,
-    password:str
+    password: str
 ):
-    return
+    return dbo.add_profile(firstName=firstName,
+                           lastName=lastName,
+                           email=email,
+                           password=password
+                           )

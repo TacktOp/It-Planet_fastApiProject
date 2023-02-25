@@ -19,21 +19,3 @@ class Database:
         self.animals = self.db['animals']
         self.locations = self.db['locations']
 
-    def add_profile(
-            self,
-            firstName: str,
-            lastName: str,
-            email: EmailStr,
-            password: str
-    ):
-        data = Profile(
-            firstName=firstName,
-            lastName=lastName,
-            email=email,
-            password=password
-        )
-
-        if (self.profile.find_one({"email": email}) is None):
-            self.profile.insert_one(data.dict())
-            return True
-        return False

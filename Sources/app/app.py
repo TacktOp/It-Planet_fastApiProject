@@ -1,5 +1,6 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
+
 from .routers import *
 
 app = FastAPI()
@@ -14,9 +15,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth_router, tags=['auth'])
 app.include_router(accounts_router, tags=['accounts'])
 app.include_router(locations_router, tags=['locations'])
 app.include_router(animals_router, tags=['animals'])
 app.include_router(animalsTypes_router, tags=['animals types'])
 app.include_router(animalsLocations_router, tags=['animals locations'])
+app.include_router(RouterApi.router, tags=['auth'])

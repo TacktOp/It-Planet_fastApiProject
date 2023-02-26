@@ -6,30 +6,44 @@ from ..database.database import Database
 router = APIRouter()
 dbo = Database()
 
-@router.get('/accounts/{accountId}')
+@router.get('/account/{accountId}')
 async def get_account(
-    accountId: int
+    accountId: str
 ):
-    return
+    return Database().account_get(accountId=accountId)
 
 @router.get('/accounts/search')
-async def get_accounts(
-    firstName: str,
-    lastName: str,
-    email: EmailStr,
-    fromm: int,
-    size: int
+async def get_account_search(
+    firstName: str = None,
+    lastName: str = None,
+    email: EmailStr = None,
+    fromm: int = 0,
+    size: int = 10
 ):
-    return
+    return Database().account_search_get(firstName=firstName,
+                                         lastName=lastName,
+                                         email=email,
+                                         fromm=fromm,
+                                         size=size
+                                         )
 
 @router.put('/accounts/{accountId}')
 async def put_account(
-    accountId: int
+    accountId: str,
+    firstName: str,
+    lastName: str,
+    email: EmailStr,
+    password: str
 ):
-    return
+    return Database().account_put(accountId=accountId,
+                                  firstName=firstName,
+                                  lastName=lastName,
+                                  email=email,
+                                  password=password
+                                  )
 
 @router.delete('/accounts/{accountId}')
 async def delete_account(
-    accountId: int
+    accountId: str
 ):
-    return
+    return Database().account_delete(accountId=accountId)

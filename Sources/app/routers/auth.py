@@ -3,13 +3,14 @@ from typing import List
 
 import pymongo
 import uvicorn
-from bson.objectid import ObjectId as BsonObjectId
-from fastapi import APIRouter, FastAPI, Request
+from fastapi import APIRouter, FastAPI, Request, HTTPException
 from fastapi.encoders import jsonable_encoder
-from pydantic import EmailStr, BaseModel
+from pydantic import EmailStr
 from pymongo import MongoClient
 from starlette import status
 from starlette.responses import JSONResponse
+
+from ..models.models import Profile
 
 
 class User:
@@ -21,24 +22,6 @@ class User:
         "reg": "/registration",
         "login": "/login"
     }
-
-    class Profile(BaseModel):
-        class PydanticObjectId(BsonObjectId):
-            @classmethod
-            def __get_validators__(cls):
-                yield cls.validate
-
-            @classmethod
-            def validate(cls, v):
-                if not isinstance(v, BsonObjectId):
-                    raise TypeError('ObjectId required')
-                return str(v)
-
-        id: PydanticObjectId = None
-        firstName: str
-        lastName: str
-        email: EmailStr
-        password: str
 
     class Token:
 
@@ -70,7 +53,10 @@ class User:
             email: EmailStr,
             password: str
     ):
-        data = self.Profile(
+        firstName = firstName.lower()
+        lastName = lastName.lower()
+        email = email.lower()
+        data = Profile(
             firstName=firstName,
             lastName=lastName,
             email=email,
@@ -78,17 +64,19 @@ class User:
         )
         if self.profileDB.find_one({"email": email}) is None:
             self.profileDB.insert_one(data.dict())
-            return True
-        return False
+            return HTTPException(status_code=201)
+
+        elif self.profileDB.find_one({'email': email}):
+            return HTTPException(status_code=409)
 
     def login(
             self,
             email: EmailStr,
             password: str
     ):
-        data = self.profileDB.find_one({"email": email})
+        data = self.profileDB.find_one({"email": email.lower()})
         if data is None:
-            return False
+            return HTTPException(status_code=404)
         elif data["password"] == password:
             return self.tokenGenerator.encode(data["email"], data["password"])
         else:

@@ -2,17 +2,13 @@ import base64
 from typing import List
 
 import pymongo
-import uvicorn
-from fastapi import APIRouter, FastAPI, Request, HTTPException
-from fastapi.encoders import jsonable_encoder
+from fastapi import APIRouter, HTTPException
 from pydantic import EmailStr
-from pymongo import MongoClient
-from starlette import status
-from starlette.responses import JSONResponse
 
+from ..database.database import Database
 from ..models.models import Profile
 
-
+dbo = Database()
 class User:
     """Роутер для Base аутентификации"""
     profileDB: pymongo.collection.Collection
@@ -83,30 +79,5 @@ class User:
             return False
 
 
-def get_profile() -> pymongo.collection.Collection:
-    CONNECTION_STRING = "mongodb://localhost:27017"
-    client = MongoClient(CONNECTION_STRING)
-    return client.get_database("it-planeta").get_collection("profile")
-
-
-if __name__ == "__main__":
-    RouterApi = User(get_profile())
-    app = FastAPI()
-    app.include_router(RouterApi.router)
-
-
-    @app.middleware("http")
-    async def add_process_time_header(request: Request, call_next):
-        print(request.headers.get("Authorization"))
-        for i in (RouterApi.route_str | {"docs": "/docs", "openapi": "/openapi.json"}).values():
-            if i == request.url.path:
-                response = await call_next(request)
-                return response
-        else:
-            return JSONResponse(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                content=jsonable_encoder({"detail": "Авторизация", "body": "вы не авторизованы"}),
-            )
-
-
-    uvicorn.run(app)
+user = User(dbo.profile)
+router = user.router

@@ -9,3 +9,8 @@ class Profile(BaseModel):
     lastName: str
     email: EmailStr
     password: str
+
+class Locations(BaseModel):
+    id: PydanticObjectId = None
+    latitude: float
+    longitude: float

@@ -6,6 +6,7 @@ from fastapi import HTTPException
 
 from ..models.models import Profile, Locations, AnimalType
 
+
 class Database:
     client: MongoClient
     db: pymongo.database.Database
@@ -103,7 +104,7 @@ class Database:
             return HTTPException(status_code=409)
 
         if latitude is None or latitude < -90 or latitude > 90 or \
-            longitude is None or longitude < -180 or longitude > 180:
+                longitude is None or longitude < -180 or longitude > 180:
             return HTTPException(status_code=400)
         else:
             data = Locations(
@@ -113,10 +114,10 @@ class Database:
             self.locations.insert_one(data.dict())
             return HTTPException(status_code=201)
 
-    def location_put(self, pointId: str, latitude: float ,longitude: float):
+    def location_put(self, pointId: str, latitude: float, longitude: float):
         if pointId is None or \
-            latitude is None or latitude < -90 or latitude > 90 or \
-            longitude is None or longitude < -180 or longitude > 180:
+                latitude is None or latitude < -90 or latitude > 90 or \
+                longitude is None or longitude < -180 or longitude > 180:
             return HTTPException(status_code=400)
 
         if self.locations.find_one({'_id': ObjectId(pointId)}) is None:

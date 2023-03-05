@@ -6,25 +6,26 @@ router = APIRouter()
 dbo = Database()
 
 @router.get('/animals/types/{typeId}')
-async def get_animalsTypes(
-    typeId: int
+async def get_animals_types(
+    typeId: str
 ):
-    return
+    return Database().animal_type_get(typeId=typeId)
 
 @router.post('/animals/types')
-async def post_animalsTypes(
+async def post_animals_types(
     type: str
 ):
-    return
+    return Database().animal_type_post(type=type)
 
 @router.put('/animals/types/{typeId}')
-async def put_animalsTypes(
-        typeId: int
+async def put_animals_types(
+        typeId: str,
+        type: str
 ):
-    return
+    return Database().animal_type_put(typeId=typeId, type=type)
 
 @router.delete('/animals/types/{typeId}')
-async def delete_animalsTypes(
-    typeId: int
+async def delete_animals_types(
+    typeId: str
 ):
-    return
+    return Database().animal_type_delete(typeId=typeId)

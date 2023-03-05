@@ -14,3 +14,7 @@ class Locations(BaseModel):
     id: PydanticObjectId = None
     latitude: float
     longitude: float
+
+class AnimalType(BaseModel):
+    id: PydanticObjectId = None
+    type: str

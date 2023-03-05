@@ -4,7 +4,7 @@ from pydantic import EmailStr
 from bson.objectid import ObjectId
 from fastapi import HTTPException
 
-from ..models.models import Profile, Locations
+from ..models.models import Profile, Locations, AnimalType
 
 class Database:
     client: MongoClient
@@ -19,8 +19,9 @@ class Database:
         self.profile = self.db['profile']
         self.animals = self.db['animals']
         self.locations = self.db['locations']
+        self.animals_type = self.db['animals_type']
 
-
+    # взаимодействие с аккаунтами
     def account_get(self, accountId: str):
         if accountId is None:
             return HTTPException(status_code=400)
@@ -85,7 +86,7 @@ class Database:
             self.profile.delete_one({'_id': ObjectId(accountId)})
             return HTTPException(status_code=200)
 
-
+    # взаимодействие с локациями
     def location_get(self, pointId: str):
         if pointId is None:
             return HTTPException(status_code=400)
@@ -132,7 +133,7 @@ class Database:
 
             return HTTPException(status_code=200)
 
-    def location_delete(self, pointId):
+    def location_delete(self, pointId: str):
         if pointId is None:
             return HTTPException(status_code=400)
 
@@ -140,4 +141,49 @@ class Database:
             return HTTPException(status_code=404)
         else:
             self.locations.delete_one({'_id': ObjectId(pointId)})
+            return HTTPException(status_code=200)
+
+    # взаимодейтвие с типами животных
+    def animal_type_get(self, typeId: str):
+        if typeId is None:
+            return HTTPException(status_code=400)
+
+        data = self.animals_type.find_one({'_id': ObjectId(typeId)})
+        if data is None:
+            return HTTPException(status_code=404)
+        else:
+            data['id'] = data['_id']
+            return AnimalType(**data)
+
+    def animal_type_post(self, type: str):
+        if type is None:
+            return HTTPException(status_code=400)
+
+        if self.animals_type.find_one({'type': type}) is not None:
+            return HTTPException(status_code=409)
+        else:
+            data = AnimalType(
+                type=type
+            )
+            self.animals_type.insert_one(data.dict())
+            return HTTPException(status_code=201)
+
+    def animal_type_put(self, typeId: str, type: str):
+        if typeId is None or type is None:
+            return HTTPException(status_code=400)
+
+        if self.animals_type.find_one({'_id': ObjectId(typeId)}) is None:
+            return HTTPException(status_code=404)
+        else:
+            self.animals_type.update_one({'_id': ObjectId(typeId)}, {'$set': {'type': type}})
+            return HTTPException(status_code=200)
+
+    def animal_type_delete(self, typeId: str):
+        if typeId is None:
+            return HTTPException(status_code=400)
+
+        if self.animals_type.find_one({'_id': ObjectId(typeId)}) is None:
+            return HTTPException(status_code=404)
+        else:
+            self.animals_type.delete_one({'_id': ObjectId(typeId)})
             return HTTPException(status_code=200)
